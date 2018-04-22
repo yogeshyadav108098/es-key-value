@@ -1,0 +1,4 @@
+apiDocs/*
+resources/db/*
+coverage/*
+node_modules/*
