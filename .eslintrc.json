@@ -1,0 +1,36 @@
+{
+    "extends": "./node_modules/eslint-config-google/index.js",
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
+    "rules": {
+        "max-len": [
+            "error",
+            {
+                "code": 120
+            }
+        ],
+        "require-jsdoc": [
+            0
+        ],
+        "new-cap": [
+            0
+        ],
+        "guard-for-in": [
+            0
+        ],
+        "no-invalid-this": [
+            0
+        ],
+        "comma-dangle": [
+            "error",
+            {
+                "arrays": "never",
+                "objects": "never",
+                "imports": "never",
+                "exports": "never",
+                "functions": "ignore"
+            }
+        ]
+    }
+}
