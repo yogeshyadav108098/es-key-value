@@ -5,10 +5,12 @@ const Q = require('q');
 const _ = require('lodash');
 
 // Internal
-const Logger = require('./lib/logger');
 const EsConfig = require('./config/es');
 const LibUtils = require('./lib/utils').getInstance();
 const ResponseCodes = require('./helpers/responseCode');
+
+let logger;
+
 
 class ElasticClient {
     constructor(client, options) {
@@ -20,13 +22,14 @@ class ElasticClient {
             );
         }
 
+        logger = _.get(options, 'logger') || require('./lib/logger');
         let self = this;
         self.esClient = client;
-        Logger.debug('Client assigned for key value pairing');
+        logger.debug('Client assigned for key value pairing');
 
         self.index = _.get(options, 'index') || EsConfig.INDEX;
         self.type = _.get(options, 'type') || EsConfig.TYPE;
-        Logger.debug('Setting type as', self.index, 'and type as', self.type);
+        logger.debug('Setting type as', self.index, 'and type as', self.type);
     }
 
     init() {
@@ -38,10 +41,10 @@ class ElasticClient {
             requestTimeout: 30000
         }, function(error) {
             if (error) {
-                Logger.error(error);
+                logger.error(error);
                 return deferred.reject(error);
             }
-            Logger.warn('ES connection established');
+            logger.warn('ES connection established');
             return deferred.resolve();
         });
         return deferred.promise;
@@ -62,7 +65,7 @@ class ElasticClient {
             }
         };
 
-        Logger.debug(JSON.stringify(searchOptions));
+        logger.debug(JSON.stringify(searchOptions));
         self.esClient.search(searchOptions).then(function(response) {
             let result = 'undefined';
             let transactions;
@@ -72,10 +75,10 @@ class ElasticClient {
                 });
                 result = transactions[0].value;
             }
-            Logger.debug('Retrieved result:', result);
+            logger.debug('Retrieved result:', result);
             return deferred.resolve(result);
         }, function(error) {
-            Logger.error(error);
+            logger.error(error);
             return deferred.reject(error);
         });
 
@@ -111,7 +114,7 @@ class ElasticClient {
                 return deferred.resolve();
             })
             .fail(function(error) {
-                Logger.error(error);
+                logger.error(error);
                 return deferred.reject(error);
             });
 
@@ -134,7 +137,7 @@ class ElasticClient {
         let index = self.index;
         let type = self.type;
 
-        Logger.debug('Deleting key:', key);
+        logger.debug('Deleting key:', key);
         self.esClient.deleteByQuery({
             index,
             type,
@@ -147,9 +150,9 @@ class ElasticClient {
             }
         }, function(error, response) {
             if (error) {
-                Logger.error(error);
+                logger.error(error);
             }
-            Logger.debug('Setting success for deleting key:', key);
+            logger.debug('Setting success for deleting key:', key);
             return deferred.resolve(key);
         });
 
@@ -167,14 +170,14 @@ function create(options) {
         body: options.body
     };
 
-    Logger.debug('Creating with options:', JSON.stringify(createOptions));
+    logger.debug('Creating with options:', JSON.stringify(createOptions));
     options.esClient.create(createOptions, function(error, response) {
         if (error) {
-            Logger.error(error);
+            logger.error(error);
             return deferred.reject(error);
         }
 
-        Logger.debug('Success with ID:', response._id);
+        logger.debug('Key-Value create success for ID:', response._id);
         return deferred.resolve(response);
     });
     return deferred.promise;
@@ -215,7 +218,7 @@ module.exports = ElasticClient;
                 return Q.resolve();
             })
             .fail(function(error) {
-                Logger.error(error);
+                logger.error(error);
             });
     }
 })();
