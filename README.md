@@ -16,30 +16,36 @@ For now ttl is not supported, but will be added soon
 const Q = require('q');
 const EsKeyValue = require('es-key-value');
 const Elasticsearch = require('elasticsearch');
-let elasticClientC = new Elasticsearch.Client({
+let client = new Elasticsearch.Client({
     host: {
         host: '127.0.0.1',
         port: 9200
     },
     log: 'trace'
 });
-let elasticClient = new EsKeyValue(elasticClientC);
+
+// 2nd Param is optional but its better if you provide
+let keyValueClient = new EsKeyValue(client, {
+    index: 'customindex',
+    type: 'customtype',
+    logger: 'customLogger'
+});
 
 new Q(undefined)
     .then(function(result) {
-        return elasticClient.init();
+        return keyValueClient.init();
     })
     .then(function() {
-        return elasticClient.set('key1', 1123);
+        return keyValueClient.set('key1', 1123);
     })
     .then(function() {
-        return elasticClient.get('key');
+        return keyValueClient.get('key');
     })
     .then(function() {
-        return elasticClient.get('key1');
+        return keyValueClient.get('key1');
     })
     .then(function() {
-        return elasticClient.get('key3');
+        return keyValueClient.get('key3');
     })
     .then(function() {
         return Q.resolve();
