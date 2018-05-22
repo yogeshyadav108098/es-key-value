@@ -11,7 +11,6 @@ const ResponseCodes = require('./helpers/responseCode');
 
 let logger;
 
-
 class ElasticClient {
     constructor(client, options) {
         if (!client) {
@@ -59,7 +58,8 @@ class ElasticClient {
             body: {
                 query: {
                     term: {
-                        key: key
+                        _id: key
+
                     }
                 }
             }
@@ -91,21 +91,21 @@ class ElasticClient {
 
         let index = self.index;
         let type = self.type;
-        let uniqueId = LibUtils.generateUuid();
-        let body = {
-            key: key,
-            value: value
-        };
+        let id = key;
+        let body = JSON.stringify({
+            doc: {
+                value: value
+            },
+            doc_as_upsert: true
+        });
 
         new Q(undefined)
             .then(function() {
-                return self.delete(key);
-            })
-            .then(function() {
-                return create({
+                logger.info('Creating or updating key with value', body);
+                return update({
                     index,
                     type,
-                    id: uniqueId,
+                    id,
                     body,
                     esClient: self.esClient
                 });
@@ -120,58 +120,20 @@ class ElasticClient {
 
         return deferred.promise;
     }
+};
 
-    delete(key) {
-        let self = this;
-        let deferred = Q.defer();
-        if (key === undefined) {
-            return Q.reject(
-                LibUtils.genError(
-                    'Can not delete without key',
-                    ResponseCodes.UNABLE_TO_PROCESS.status,
-                    Response.UNABLE_TO_PROCESS.code
-                )
-            );
-        }
-
-        let index = self.index;
-        let type = self.type;
-
-        logger.debug('Deleting key:', key);
-        self.esClient.deleteByQuery({
-            index,
-            type,
-            body: {
-                query: {
-                    term: {
-                        key: key
-                    }
-                }
-            }
-        }, function(error, response) {
-            if (error) {
-                logger.error(error);
-            }
-            logger.debug('Setting success for deleting key:', key);
-            return deferred.resolve(key);
-        });
-
-        return deferred.promise;
-    }
-}
-
-function create(options) {
+function update(options) {
     let deferred = Q.defer();
 
-    let createOptions = {
+    let updateOptions = {
         index: options.index,
         type: options.type,
         id: options.id,
         body: options.body
     };
 
-    logger.debug('Creating with options:', JSON.stringify(createOptions));
-    options.esClient.create(createOptions, function(error, response) {
+    logger.debug('Updating with options:', JSON.stringify(updateOptions));
+    options.esClient.update(updateOptions, function(error, response) {
         if (error) {
             logger.error(error);
             return deferred.reject(error);
@@ -196,6 +158,7 @@ module.exports = ElasticClient;
             }
             // log: 'trace'
         });
+        let time = require('sleep');
         let elasticClient = new ElasticClient(elasticClientC);
 
         new Q(undefined)
@@ -203,16 +166,27 @@ module.exports = ElasticClient;
                 return elasticClient.init();
             })
             .then(function() {
-                return elasticClient.set('key1', 1123);
+                return elasticClient.get('key123');
             })
             .then(function() {
-                return elasticClient.get('key');
+                return elasticClient.set('key123', 1211);
             })
             .then(function() {
-                return elasticClient.get('key1');
+                time.sleep(1);
+                return Q.resolve();
             })
             .then(function() {
-                return elasticClient.get('key3');
+                return elasticClient.get('key123');
+            })
+            .then(function() {
+                return elasticClient.set('key123', 21);
+            })
+            .then(function() {
+                time.sleep(1);
+                return Q.resolve();
+            })
+            .then(function() {
+                return elasticClient.get('key123');
             })
             .then(function() {
                 return Q.resolve();
