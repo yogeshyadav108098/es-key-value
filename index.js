@@ -59,7 +59,6 @@ class ElasticClient {
                 query: {
                     term: {
                         _id: key
-
                     }
                 }
             }
@@ -164,9 +163,6 @@ module.exports = ElasticClient;
         new Q(undefined)
             .then(function(result) {
                 return elasticClient.init();
-            })
-            .then(function() {
-                return elasticClient.get('key123');
             })
             .then(function() {
                 return elasticClient.set('key123', 1211);
