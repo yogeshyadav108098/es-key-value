@@ -32,25 +32,36 @@ let keyValueClient = new EsKeyValue(client, {
 });
 
 new Q(undefined)
-    .then(function(result) {
-        return keyValueClient.init();
-    })
-    .then(function() {
-        return keyValueClient.set('key1', 1123);
-    })
-    .then(function() {
-        return keyValueClient.get('key');
-    })
-    .then(function() {
-        return keyValueClient.get('key1');
-    })
-    .then(function() {
-        return keyValueClient.get('key3');
-    })
-    .then(function() {
-        return Q.resolve();
-    })
-    .fail(function(error) {
-        console.log(error);
-    });
+        .then(function(result) {
+            return keyValueClient.init();
+        })
+        .then(function() {
+            return keyValueClient.get('key123');
+        })
+        .then(function() {
+            return keyValueClient.set('key123', 1211);
+        })
+        .then(function() {
+            time.sleep(1);
+            return Q.resolve();
+        })
+        .then(function() {
+            return keyValueClient.get('key123');
+        })
+        .then(function() {
+            return keyValueClient.set('key123', 21);
+        })
+        .then(function() {
+            time.sleep(1);
+            return Q.resolve();
+        })
+        .then(function() {
+            return keyValueClient.get('key123');
+        })
+        .then(function() {
+            return Q.resolve();
+        })
+        .fail(function(error) {
+            logger.error(error);
+        });
 ```
