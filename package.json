@@ -1,6 +1,6 @@
 {
     "name": "es-key-value",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Save as key value pairs in es",
     "main": "index.js",
     "scripts": {
