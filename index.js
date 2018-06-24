@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 // Internal
 const EsConfig = require('./config/es');
-const LibUtils = require('./lib/utils').getInstance();
+const LibUtils = require('./lib/utils')();
 const ResponseCodes = require('./helpers/responseCode');
 
 let logger;
@@ -59,7 +59,6 @@ class ElasticClient {
                 query: {
                     term: {
                         _id: key
-
                     }
                 }
             }
@@ -156,17 +155,12 @@ module.exports = ElasticClient;
                 host: '127.0.0.1',
                 port: 9200
             }
-            // log: 'trace'
         });
         let time = require('sleep');
         let elasticClient = new ElasticClient(elasticClientC);
-
         new Q(undefined)
             .then(function(result) {
                 return elasticClient.init();
-            })
-            .then(function() {
-                return elasticClient.get('key123');
             })
             .then(function() {
                 return elasticClient.set('key123', 1211);
