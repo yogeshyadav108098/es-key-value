@@ -44,7 +44,7 @@ For now ttl is not supported, but will be added soon
 ```javascript
 
 const Q = require('q');
-const Time = require('sleep');
+const Sleep = require('sleep');
 const EsKeyValue = require('es-key-value');
 const Elasticsearch = require('elasticsearch');
 let client = new Elasticsearch.Client({
@@ -73,7 +73,7 @@ new Q(undefined)
             return keyValueClient.set('key123', 1211);
         })
         .then(function() {
-            Time.sleep(1);
+            Sleep.sleep(1);
             return Q.resolve();
         })
         .then(function() {
@@ -83,7 +83,7 @@ new Q(undefined)
             return keyValueClient.set('key123', 21);
         })
         .then(function() {
-            Time.sleep(1);
+            Sleep.sleep(1);
             return Q.resolve();
         })
         .then(function() {

@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 // Internal
 const EsConfig = require('./config/es');
-const LibUtils = require('./lib/utils').getInstance();
+const LibUtils = require('./lib/utils')();
 const ResponseCodes = require('./helpers/responseCode');
 
 let logger;
@@ -155,7 +155,6 @@ module.exports = ElasticClient;
                 host: '127.0.0.1',
                 port: 9200
             }
-            // log: 'trace'
         });
         let time = require('sleep');
         let elasticClient = new ElasticClient(elasticClientC);
