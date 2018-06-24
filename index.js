@@ -159,7 +159,6 @@ module.exports = ElasticClient;
         });
         let time = require('sleep');
         let elasticClient = new ElasticClient(elasticClientC);
-
         new Q(undefined)
             .then(function(result) {
                 return elasticClient.init();
