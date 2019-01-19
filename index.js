@@ -156,7 +156,7 @@ module.exports = ElasticClient;
                 port: 9200
             }
         });
-        let time = require('sleep');
+        // let time = require('sleep');
         let elasticClient = new ElasticClient(elasticClientC);
         new Q(undefined)
             .then(function(result) {
@@ -166,7 +166,7 @@ module.exports = ElasticClient;
                 return elasticClient.set('key123', 1211);
             })
             .then(function() {
-                time.sleep(1);
+                // time.sleep(1);
                 return Q.resolve();
             })
             .then(function() {
@@ -176,7 +176,7 @@ module.exports = ElasticClient;
                 return elasticClient.set('key123', 21);
             })
             .then(function() {
-                time.sleep(1);
+                // time.sleep(1);
                 return Q.resolve();
             })
             .then(function() {
